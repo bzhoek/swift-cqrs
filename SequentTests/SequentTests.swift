@@ -20,8 +20,6 @@ class CommandBus {
       $0.handle(command)
     }.flatMap {
       $0
-    }.flatMap {
-      self.emit($0)
     }
   }
 
@@ -61,6 +59,32 @@ class CreateTodo: Command {
     super.init(uuid: uuid)
   }
 }
+
+class CompleteTodo: Command {
+
+  override init(uuid: NSUUID) {
+    super.init(uuid: uuid)
+  }
+}
+
+class TodoHandler: CommandHandler {
+
+  override func handle(command: Command) -> [Event]? {
+    if let command = command as? CreateTodo { handle(command) }
+    if let command = command as? CompleteTodo { handle(command) }
+    return [Event()]
+  }
+
+  func handle(command: CreateTodo) {
+
+  }
+
+  func handle(command: CompleteTodo) {
+
+  }
+}
+
+
 
 class Aggregate {
 }
