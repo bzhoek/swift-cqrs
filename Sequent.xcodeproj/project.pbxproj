@@ -10,6 +10,7 @@
 		4995F4CB1D75A6DE00577C47 /* Sequent.h in Headers */ = {isa = PBXBuildFile; fileRef = 4995F4CA1D75A6DE00577C47 /* Sequent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4995F4D21D75A6DE00577C47 /* Sequent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4995F4C71D75A6DE00577C47 /* Sequent.framework */; };
 		4995F4D71D75A6DE00577C47 /* SequentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4995F4D61D75A6DE00577C47 /* SequentTests.swift */; };
+		49C45CEF1D86DBDF002EF925 /* TodoIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C45CEE1D86DBDF002EF925 /* TodoIntegrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +30,7 @@
 		4995F4D11D75A6DE00577C47 /* SequentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SequentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4995F4D61D75A6DE00577C47 /* SequentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequentTests.swift; sourceTree = "<group>"; };
 		4995F4D81D75A6DE00577C47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		49C45CEE1D86DBDF002EF925 /* TodoIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoIntegrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 			children = (
 				4995F4D61D75A6DE00577C47 /* SequentTests.swift */,
 				4995F4D81D75A6DE00577C47 /* Info.plist */,
+				49C45CEE1D86DBDF002EF925 /* TodoIntegrationTests.swift */,
 			);
 			path = SequentTests;
 			sourceTree = "<group>";
@@ -201,6 +204,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49C45CEF1D86DBDF002EF925 /* TodoIntegrationTests.swift in Sources */,
 				4995F4D71D75A6DE00577C47 /* SequentTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -378,6 +382,7 @@
 				4995F4DD1D75A6DE00577C47 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4995F4DE1D75A6DE00577C47 /* Build configuration list for PBXNativeTarget "SequentTests" */ = {
 			isa = XCConfigurationList;
@@ -386,6 +391,7 @@
 				4995F4E01D75A6DE00577C47 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

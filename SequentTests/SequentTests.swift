@@ -1,12 +1,26 @@
 import XCTest
 @testable import Sequent
 
-class Command {
-  let uuid: NSUUID
-  init(uuid: NSUUID) {
+class Identifiable: Equatable {
+  let uuid: String
+  init(uuid: String) {
     self.uuid = uuid
   }
+
+  var description: String {
+    return "uuid:\(uuid)"
+  }
 }
+
+func ==(lhs: Identifiable, rhs: Identifiable) -> Bool {return lhs.description == rhs.description}
+
+class Command: Identifiable {
+}
+
+class Event: Identifiable {
+}
+
+func ==(lhs: Event, rhs: Event) -> Bool {return lhs.uuid == rhs.uuid}
 
 class CommandBus {
   let handlers: [CommandHandler]
@@ -28,72 +42,49 @@ class CommandBus {
   }
 }
 
+class EventBus {
+  var events: [Event] = []
+
+  init() {
+  }
+
+  func add(event: Event) {
+    events.append(event)
+  }
+}
+
 class CommandHandler {
+  let bus: EventBus
+
+  init(bus: EventBus) {
+    self.bus = bus
+  }
+
   func handle(command: Command) -> [Event]? {
     return .None
   }
+
+  func emit(event: Event) { bus.add(event) }
 }
 
 class CommandBusTests: XCTestCase {
 
   class MockCommandHandler: CommandHandler {
     override func handle(command: Command) -> [Event]? {
-      return [Event()]
+      return []
     }
   }
 
   func testCommandBus() {
-    let bus = CommandBus(handlers: [MockCommandHandler()])
-    let command = Command(uuid: NSUUID(UUIDString: "01000000-0000-0000-0000-000000000000")!)
+    let bus = CommandBus(handlers: [MockCommandHandler(bus: EventBus())])
+    let command = Command(uuid: "1")
     bus.dispatch(command)
   }
 }
 
-class CreateTodo: Command {
-  let title: String
-  let description: String
+class Aggregate {}
 
-  init(uuid: NSUUID, title: String, description: String) {
-    self.title = title
-    self.description = description
-    super.init(uuid: uuid)
-  }
-}
-
-class CompleteTodo: Command {
-
-  override init(uuid: NSUUID) {
-    super.init(uuid: uuid)
-  }
-}
-
-class TodoHandler: CommandHandler {
-
-  override func handle(command: Command) -> [Event]? {
-    if let command = command as? CreateTodo { handle(command) }
-    if let command = command as? CompleteTodo { handle(command) }
-    return [Event()]
-  }
-
-  func handle(command: CreateTodo) {
-
-  }
-
-  func handle(command: CompleteTodo) {
-
-  }
-}
-
-
-
-class Aggregate {
-}
-
-class Event {
-}
-
-class EventStore {
-}
+class EventStore {}
 
 class SequentTests: XCTestCase {
 
@@ -106,8 +97,8 @@ class SequentTests: XCTestCase {
   }
 
   func testCommandUUID() {
-    let command = Command(uuid: NSUUID(UUIDString: "01000000-0000-0000-0000-000000000000")!)
-    XCTAssertEqual("01000000-0000-0000-0000-000000000000", command.uuid.UUIDString)
+    let command = Command(uuid: "test")
+    XCTAssertEqual("test", command.uuid)
   }
 
 }
