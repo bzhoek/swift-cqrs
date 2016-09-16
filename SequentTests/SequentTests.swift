@@ -55,9 +55,11 @@ class EventBus {
 
 class CommandHandler {
   let bus: EventBus
+  let store: EventStore
 
-  init(bus: EventBus) {
+  init(bus: EventBus, store: EventStore) {
     self.bus = bus
+    self.store = store
   }
 
   func handle(command: Command) -> [Event]? {
@@ -76,15 +78,40 @@ class CommandBusTests: XCTestCase {
   }
 
   func testCommandBus() {
-    let bus = CommandBus(handlers: [MockCommandHandler(bus: EventBus())])
+    let bus = CommandBus(handlers: [MockCommandHandler(bus: EventBus(), store: EventStore())])
     let command = Command(uuid: "1")
     bus.dispatch(command)
   }
 }
 
-class Aggregate {}
+class Aggregate {
+  let bus: EventBus
+  init(bus: EventBus) {
+    self.bus = bus
+  }
+  
+  func emit(event: Event) {
+    bus.add(event)
+  }
+}
 
-class EventStore {}
+class EventStore {
+  var eventsMap = [String: [Event]]()
+  
+  func add(events: [Event]) {
+    for event in events {
+      if eventsMap[event.uuid] == nil {
+        eventsMap[event.uuid] = [event]
+      } else {
+        eventsMap[event.uuid]?.append(event)
+      }
+    }
+  }
+  
+  func lookup(uuid: String) -> [Event]? {
+    return eventsMap[uuid]
+  }
+}
 
 class SequentTests: XCTestCase {
 
@@ -102,3 +129,14 @@ class SequentTests: XCTestCase {
   }
 
 }
+
+class EventStoreTests: XCTestCase {
+
+  func testLookup() {
+    let eventStore = EventStore()
+    eventStore.add([TodoCreated(uuid: "1", title: "Title", body: "Body")])
+    XCTAssertEqual(1, eventStore.lookup("1")?.count)
+  }
+  
+}
+

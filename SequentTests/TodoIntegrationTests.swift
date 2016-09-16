@@ -30,12 +30,16 @@ class CompleteTodo: Command {}
 
 class TodoCompleted: Event {}
 
-class TodoHandler: CommandHandler {
-  
-  override func handle(command: Command) -> [Event]? {
-    if let command = command as? CreateTodo { handle(command) }
-    if let command = command as? CompleteTodo { handle(command) }
-    return []
+class TodoAggregate: Aggregate {
+
+  var uuid = ""
+  var title = ""
+  var body = ""
+
+  func handle(event: TodoCreated) {
+    self.uuid = event.uuid
+    self.title = event.title
+    self.body = event.body
   }
   
   func handle(command: CreateTodo) {
@@ -43,34 +47,71 @@ class TodoHandler: CommandHandler {
   }
   
   func handle(command: CompleteTodo) {
-    
+    emit(TodoCompleted(uuid: command.uuid))
   }
+
 }
 
-class TodoIntegrationTests: XCTestCase {
+class TodoHandler: CommandHandler {
+
+  override func handle(command: Command) -> [Event]? {
+    let aggregate = TodoAggregate(bus: bus)
+    store.lookup(command.uuid)?.forEach({ self.handle(aggregate, event: $0) })
+    if let command = command as? CreateTodo { aggregate.handle(command) }
+    if let command = command as? CompleteTodo { aggregate.handle(command) }
+    return []
+  }
   
+  func handle(aggregate: TodoAggregate, event: Event) {
+    if let event = event as? TodoCreated { aggregate.handle(event) }
+  }
+  
+}
+
+class GivenWhenThenTests: XCTestCase {
+
+  var commandBus: CommandBus!
   var eventBus: EventBus!
+  var eventStore: EventStore!
   
   override func setUp() {
     super.setUp()
     eventBus = EventBus()
+    eventStore = EventStore()
+    commandBus = CommandBus(handlers: [TodoHandler(bus:eventBus, store: eventStore)])
   }
+  
+  func given(events: [Event]) {
+    eventStore.add(events)
+  }
+  
+  func when(command: Command) {
+    commandBus.dispatch(command)
+  }
+  
+  func then(events: [Event]) {
+    XCTAssertEqual(events, eventBus.events)
+  }
+  
+}
 
+class TodoIntegrationTests: GivenWhenThenTests {
+  
   func testCommandBus() {
-    let bus = CommandBus(handlers: [TodoHandler(bus:eventBus)])
     let command = CreateTodo(
       uuid: "1",
       title: "Title",
       body: "Body"
     )
 
-    bus.dispatch(command)
-
-    XCTAssertEvents([TodoCreated(uuid: "1", title: "Title", body: "Body")])
+    when(command)
+    then([TodoCreated(uuid: "1", title: "Title", body: "Body")])
   }
   
-  func XCTAssertEvents(events: [Event]) {
-    XCTAssertEqual(events, eventBus.events)
+  func testTodoCompletion() {
+    given([TodoCreated(uuid: "1", title: "Title", body: "Body")])
+    when(CompleteTodo(uuid: "1"))
+    then([TodoCompleted(uuid: "1")])
   }
   
 }
